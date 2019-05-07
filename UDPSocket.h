@@ -13,7 +13,7 @@ class UDPSocket : public Socket{
 public:
     typedef enum ip_version { ipv4=AF_INET,ipv6=AF_INET6,unspecified=AF_UNSPEC}ip_version;
     UDPSocket(ip_version version,string ip_addr="",string port_num="");
-    void Send();
+    ssize_t Send(string &message);
     void Receive(string &message, int max_length);
 private:
     struct addrinfo *results_;
