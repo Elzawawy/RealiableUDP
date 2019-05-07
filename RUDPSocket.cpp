@@ -4,11 +4,12 @@
 
 #include "RUDPSocket.h"
 
-void RUDPSocket::Send() {
+void RUDPSocket::Send(string& message) {
+
 
 }
 
-void RUDPSocket::Receive() {
+void RUDPSocket::Receive(string &message, int max_length) {
 
 }
 

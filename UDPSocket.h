@@ -1,11 +1,11 @@
 //
 // Created by zawawy on 5/1/19.
 //
+#ifndef UDPSOCKET_H
+#define UDPSOCKET_H
+
 #include "Socket.h"
 #include <sys/socket.h>
-#ifndef RUDP_UDPSOCKET_H
-#define RUDP_UDPSOCKET_H
-
 #include <string>
 using namespace std;
 class UDPSocket : public Socket{

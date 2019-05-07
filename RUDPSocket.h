@@ -2,15 +2,19 @@
 // Created by zawawy on 5/7/19.
 //
 
-#ifndef REALIABLEUDP_RUDPSOCKET_H
-#define REALIABLEUDP_RUDPSOCKET_H
+#ifndef RUDPSOCKET_H
+#define RUDPSOCKET_H
+
+#include <string>
 #include "Socket.h"
+
+using namespace std;
 
 class RUDPSocket : Socket {
 public:
     RUDPSocket(int send_maxsize);
-    void Send() override;
-    void Receive() override;
+    void Send(string& message) override;
+    void Receive(string &message, int max_length) override;
 
 private:
     int base_;
