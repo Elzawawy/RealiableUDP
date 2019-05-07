@@ -3,4 +3,5 @@ project(RealiableUDP)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(RealiableUDP main.cpp)
+add_executable(RealiableUDP main.cpp
+        Socket.h)
