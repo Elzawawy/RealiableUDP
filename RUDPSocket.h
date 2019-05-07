@@ -4,9 +4,10 @@
 
 #ifndef REALIABLEUDP_RUDPSOCKET_H
 #define REALIABLEUDP_RUDPSOCKET_H
+#include "Socket.h"
 
+class RUDPSocket : Socket {
 
-class RUDPSocket {
 
 };
 
