@@ -7,9 +7,15 @@
 #include "Socket.h"
 
 class RUDPSocket : Socket {
+public:
+    RUDPSocket(int send_maxsize);
+    void Send() override;
+    void Receive() override;
 
-    void Send();
-    void Receive();
+private:
+    int base_;
+    int next_seq_num_;
+    int sendwind_size_;
 };
 
 
