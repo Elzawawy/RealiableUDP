@@ -66,9 +66,8 @@ void UDPSocket::Receive(string &message, int max_length) {
 
 }
 
-ssize_t UDPSocket::Send(string& message) {
+void UDPSocket::Send(string& message) {
     ssize_t num_bytes;
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t)(message.length()), 0,this->addr_,this->addr_len_)) == -1)
         perror("send");
-    return num_bytes;
 }

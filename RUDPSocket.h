@@ -8,7 +8,8 @@
 
 class RUDPSocket : Socket {
 
-
+    void Send();
+    void Receive();
 };
 
 

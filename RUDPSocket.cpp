@@ -3,3 +3,11 @@
 //
 
 #include "RUDPSocket.h"
+
+void RUDPSocket::Send() {
+
+}
+
+void RUDPSocket::Receive() {
+
+}
