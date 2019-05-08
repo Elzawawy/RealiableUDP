@@ -2,6 +2,7 @@
 // Created by omar_swidan on 07/05/19.
 //
 
+#include <sstream>
 #include "SocketHelper.h"
 
 vector<SocketHelper::Packet> *SocketHelper::MakePackets(string &data, uint32_t seqno) {
@@ -32,6 +33,36 @@ vector<SocketHelper::Packet> *SocketHelper::MakePackets(string &data, uint32_t s
 }
 
 SocketHelper::SocketHelper(const uint16_t max_packet_length) : max_packet_length(max_packet_length) {}
+
+string *SocketHelper::pkt_tostring(SocketHelper::Packet &pkt) {
+    auto * pkt_string = new string;
+    pkt_string->append(std::to_string(pkt.cksum)+"\n");
+    pkt_string->append(std::to_string(pkt.len)+"\n");
+    pkt_string->append(std::to_string(pkt.seqno)+"\n");
+    pkt_string->append(*pkt.data);
+    return pkt_string;
+}
+
+SocketHelper::Packet *SocketHelper::string_topkt(string &str) {
+    std::vector<std::string> strings = split_string(str, "\n");
+    return new Packet(stoi(strings[0]),stoi(strings[1]),stoi(strings[2]),&strings[3]);
+}
+
+std::vector<std::string> SocketHelper::split_string(const std::string &str, const std::string &delimiter) {
+    std::vector<std::string> strings;
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    while ((pos = str.find(delimiter, prev)) != std::string::npos)
+    {
+        strings.push_back(str.substr(prev, pos - prev));
+        prev = pos + 1;
+    }
+
+    // To get the last substring (or only, if delimiter is not found)
+    strings.push_back(str.substr(prev));
+
+    return strings;
+}
 
 SocketHelper::Packet::Packet(uint16_t cksum,  uint16_t len, uint32_t seqno, string *data) : cksum(
         cksum), len(len), seqno(seqno), data(data) {}

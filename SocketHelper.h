@@ -14,9 +14,7 @@ using namespace std;
 class SocketHelper {
 public:
     const uint16_t max_packet_length;
-
     explicit SocketHelper(uint16_t max_packet_length);
-
     struct Packet{
 
     const uint16_t cksum;
@@ -31,10 +29,13 @@ public:
         uint16_t cksum;
         uint16_t len;
         uint32_t ackno;
-
-        string* data;
     };
     vector<Packet>*MakePackets(string &data, uint32_t seqno);
+    string* pkt_tostring(Packet &pkt);
+    Packet* string_topkt(string &str);
+
+private:
+    std::vector<std::string> split_string(const std::string& str, const std::string& delimiter);
 };
 
 

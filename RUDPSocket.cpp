@@ -28,6 +28,7 @@ void RUDPSocket::Send(string& message) {
 }
 
 void RUDPSocket::Receive(string &message, int max_length) {
+    
 
 }
 
