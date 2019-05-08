@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <thread>
+#include "UDPSocket.h"
 #include "RUDPSocket.h"
 
 
@@ -11,11 +12,14 @@
 void RUDPSocket::Send(string& message) {
     //Break the message into an array of packets to be sent.
     vector<Packet> packets;
+    int th_id = 0;
     for (Packet pkt: packets) {
         //create a thread for each packet.
-        thread th(&RUDPSocket::sendpkt_th,this, pkt);
+        thread th(&RUDPSocket::sendpkt_th,this, th_id,pkt);
         //detach the thread from main thread.
         th.detach();
+        //increment thread id.
+        th_id ++;
     }
 
 
@@ -27,19 +31,27 @@ void RUDPSocket::Receive(string &message, int max_length) {
 
 }
 
-RUDPSocket::RUDPSocket(int send_maxsize) {
+RUDPSocket::RUDPSocket(UDPSocket::ip_version version,string ip_addr,string port_num,int send_maxsize) {
 
     // Initialize variables used in GBN.
     this->base_ = 1;
-    this->next_seq_num_ = 1;
+    this->next_seqnum_ = 1;
     // Initialize Sending sliding window maximum size.
     this->sendwind_size_ = send_maxsize;
+    this->udp_socket_ = UDPSocket(version, ip_addr, port_num);
 }
 
 void *RUDPSocket::sendpkt_th(RUDPSocket::Packet &packet, int th_id) {
     std::unique_lock<std::mutex> lock(mtx_);
     while(th_id != current_thid_ || !ready_run_ )
         run_cv_.wait(lock);
-
-    return nullptr;
+    current_thid_++;
+    if(next_seqnum_ < base_ + sendwind_size_)
+    {
+        udp_socket_.Send(packet.data);
+        if(base_ == next_seqnum_)
+            //start_timer
+        next_seqnum_++;
+    }
 }
+
