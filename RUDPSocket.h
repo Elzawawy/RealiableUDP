@@ -23,11 +23,15 @@ public:
 
 private:
     UDPSocket udp_socket_;
+    SocketHelper socket_helper_ = SocketHelper(500);
     Timer timer_;
+    //Make a initial packet to send when packet received is out of order.
+    SocketHelper::AckPacket ack_packet_ = SocketHelper::AckPacket(0,0,0);
     void* sendpkt_th(SocketHelper::Packet &packet, int th_id);
     int base_;
     int next_seqnum_;
     int sendwind_size_;
+    int expected_seqnum_;
     mutex mtx_;                 // mutex for critical section
     condition_variable run_cv_;  // condition variable for critical section
     condition_variable recv_run_;

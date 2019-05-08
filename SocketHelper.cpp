@@ -34,7 +34,7 @@ vector<SocketHelper::Packet> *SocketHelper::MakePackets(string &data, uint32_t s
 
 SocketHelper::SocketHelper(const uint16_t max_packet_length) : max_packet_length(max_packet_length) {}
 
-string *SocketHelper::pkt_tostring(SocketHelper::Packet &pkt) {
+string *SocketHelper::PacketToString(SocketHelper::Packet &pkt) {
     auto * pkt_string = new string;
     pkt_string->append(std::to_string(pkt.cksum)+"\n");
     pkt_string->append(std::to_string(pkt.len)+"\n");
@@ -43,9 +43,12 @@ string *SocketHelper::pkt_tostring(SocketHelper::Packet &pkt) {
     return pkt_string;
 }
 
-SocketHelper::Packet *SocketHelper::string_topkt(string &str) {
+SocketHelper::Packet *SocketHelper::StringToPacket(string &str) {
     std::vector<std::string> strings = split_string(str, "\n");
-    return new Packet(stoi(strings[0]),stoi(strings[1]),stoi(strings[2]),&strings[3]);
+    return new Packet(static_cast<uint16_t>(stoi(strings[0])),
+                      static_cast<uint16_t>(stoi(strings[1])),
+                      static_cast<uint32_t>(stoi(strings[2])),
+                      &strings[3]);
 }
 
 std::vector<std::string> SocketHelper::split_string(const std::string &str, const std::string &delimiter) {
@@ -64,5 +67,23 @@ std::vector<std::string> SocketHelper::split_string(const std::string &str, cons
     return strings;
 }
 
+string *SocketHelper::AckPacketToString(SocketHelper::AckPacket &pkt) {
+    auto * pkt_string = new string;
+    pkt_string->append(std::to_string(pkt.cksum)+"\n");
+    pkt_string->append(std::to_string(pkt.len)+"\n");
+    pkt_string->append(std::to_string(pkt.ackno)+"\n");
+    return pkt_string;
+}
+
+SocketHelper::AckPacket *SocketHelper::StringToAckPacket(string &str) {
+    std::vector<std::string> strings = split_string(str, "\n");
+    return new AckPacket(static_cast<uint16_t>(stoi(strings[0])),
+                      static_cast<uint16_t>(stoi(strings[1])),
+                      static_cast<uint32_t>(stoi(strings[2])));
+
+}
+
 SocketHelper::Packet::Packet(uint16_t cksum,  uint16_t len, uint32_t seqno, string *data) : cksum(
         cksum), len(len), seqno(seqno), data(data) {}
+
+SocketHelper::AckPacket::AckPacket(uint16_t cksum, uint16_t len, uint32_t ackno) : cksum(cksum),len(len), ackno(ackno){}

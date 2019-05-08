@@ -28,8 +28,22 @@ void RUDPSocket::Send(string& message) {
 }
 
 void RUDPSocket::Receive(string &message, int max_length) {
-    
-
+    //Receive an unreliable message.
+    udp_socket_.Receive(message,max_length);
+    //convert this string into packet format.
+    SocketHelper::Packet * rcvpkt = socket_helper_.StringToPacket(message);
+    //if it has the expected sequence number.
+    if(rcvpkt->seqno == expected_seqnum_)
+    {
+        //extract and deliver data.
+        message = *rcvpkt->data;
+        //prepare ack packet.
+        ack_packet_ = SocketHelper::AckPacket(0, 0, static_cast<uint32_t>(expected_seqnum_));
+        //increment expected sequence number.
+        expected_seqnum_++;
+    }
+    //send the ack packet whether an updated version of it or the oldest ACK available.
+    udp_socket_.Send(*socket_helper_.AckPacketToString(ack_packet_));
 }
 
 RUDPSocket::RUDPSocket(UDPSocket::ip_version version,string ip_addr,string port_num,int send_maxsize) {
@@ -37,6 +51,7 @@ RUDPSocket::RUDPSocket(UDPSocket::ip_version version,string ip_addr,string port_
     // Initialize variables used in GBN.
     this->base_ = 1;
     this->next_seqnum_ = 1;
+    this->expected_seqnum_ = 1;
     // Initialize Sending sliding window maximum size.
     this->sendwind_size_ = send_maxsize;
     this->udp_socket_ = UDPSocket(version, ip_addr, port_num);
@@ -52,7 +67,7 @@ void *RUDPSocket::sendpkt_th(SocketHelper::Packet &packet, int th_id) {
     {
         udp_socket_.Send(*(packet.data));
         if(base_ == next_seqnum_)
-            timer_.StartTimer();
+            //timer_.StartTimer();
         next_seqnum_++;
     }
 }
