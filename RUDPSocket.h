@@ -8,29 +8,22 @@
 #include <string>
 #include <mutex>
 #include <condition_variable>
+#include "UDPSocket.h"
 #include "Socket.h"
 
 using namespace std;
 
 class RUDPSocket : Socket {
 public:
-    RUDPSocket(int send_maxsize);
+    RUDPSocket(UDPSocket::ip_version version,string ip_addr="",string port_num="",int send_maxsize=0);
     void Send(string& message) override;
     void Receive(string &message, int max_length) override;
 
 private:
-    typedef struct packet {
-        /*Header*/
-        unsigned short checksum;  // 16 bits
-        unsigned short length;    // 16 bits
-        unsigned int seqno;      // 32 bits
-        /*Data*/
-        char data[500];
-
-    }Packet;
+    UDPSocket udp_socket_;
     void* sendpkt_th(Packet &packet, int th_id);
     int base_;
-    int next_seq_num_;
+    int next_seqnum_;
     int sendwind_size_;
     mutex mtx_;                 // mutex for critical section
     condition_variable run_cv_;  // condition variable for critical section

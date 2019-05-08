@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include "UDPSocket.h"
 
+UDPSocket::UDPSocket() {}
+
 UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_num) {
 
     struct addrinfo hints,*temp;
@@ -71,3 +73,4 @@ void UDPSocket::Send(string& message) {
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t)(message.length()), 0,this->addr_,this->addr_len_)) == -1)
         perror("send");
 }
+
