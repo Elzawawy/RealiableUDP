@@ -8,6 +8,8 @@
 #include <string>
 #include <mutex>
 #include <condition_variable>
+#include "SocketHelper.h"
+#include "Timer.h"
 #include "UDPSocket.h"
 #include "Socket.h"
 
@@ -21,7 +23,8 @@ public:
 
 private:
     UDPSocket udp_socket_;
-    void* sendpkt_th(Packet &packet, int th_id);
+    Timer timer_;
+    void* sendpkt_th(SocketHelper::Packet &packet, int th_id);
     int base_;
     int next_seqnum_;
     int sendwind_size_;
