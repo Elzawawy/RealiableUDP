@@ -74,3 +74,35 @@ void UDPSocket::Send(string& message) {
         perror("send");
 }
 
+int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) {
+    string buffer;
+    fd_set readfds;
+    struct timeval tv;
+    string request;
+    buffer.clear();
+    buffer.resize(max_length);
+    struct sockaddr_storage their_addr;
+    socklen_t addr_len = sizeof their_addr;
+    int bytes_read = 0;
+    // clear the set ahead of time
+    FD_ZERO(&readfds);
+    // add our descriptors to the set
+    FD_SET(sock_fd_, &readfds);
+    // wait until either socket has data ready to be recv()d
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+    while (true) {
+        int rv = select(sock_fd_ + 1, &readfds, nullptr, nullptr, &tv);
+        if (rv == -1) {
+            perror("select");
+            break;
+        }
+        else if (rv == 0) break;
+        if (FD_ISSET(sock_fd_, &readfds)) {
+            bytes_read = static_cast<int>(recvfrom(sock_fd_, &message[0],(size_t)max_length, 0, (struct sockaddr *)&their_addr, &addr_len));
+        }
+    }
+    return bytes_read;
+
+}
+

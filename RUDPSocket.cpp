@@ -67,7 +67,7 @@ void RUDPSocket::Receive(string &message, int max_length) {
     udp_socket_.Send(*socket_helper_.AckPacketToString(ack_packet_));
 }
 
-RUDPSocket::RUDPSocket(UDPSocket::ip_version version,string ip_addr,string port_num,int send_maxsize):timer_(20) {
+RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num):timer_(20) {
 
     // Initialize variables used in GBN.
     this->base_ = 1;
