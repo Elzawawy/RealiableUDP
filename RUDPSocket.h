@@ -17,7 +17,7 @@ using namespace std;
 
 class RUDPSocket : Socket {
 public:
-    RUDPSocket(UDPSocket::ip_version version,string ip_addr="",string port_num="",int send_maxsize=0);
+    RUDPSocket(int send_maxsize,UDPSocket::ip_version version =ipv4,string ip_addr="",string port_num="");
     void Send(string& message) override;
     void Receive(string &message, int max_length) override;
 

@@ -14,6 +14,7 @@ void RUDPSocket::Send(string& message) {
     vector<SocketHelper::Packet> packets;
     int th_id = 0;
     for (SocketHelper::Packet pkt: packets) {
+
         //create a thread for each packet.
         thread th(&RUDPSocket::sendpkt_th,this, th_id,pkt);
         //detach the thread from main thread.
@@ -46,7 +47,7 @@ void RUDPSocket::Receive(string &message, int max_length) {
     udp_socket_.Send(*socket_helper_.AckPacketToString(ack_packet_));
 }
 
-RUDPSocket::RUDPSocket(UDPSocket::ip_version version,string ip_addr,string port_num,int send_maxsize) {
+RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num) {
 
     // Initialize variables used in GBN.
     this->base_ = 1;
