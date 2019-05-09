@@ -15,6 +15,7 @@ public:
     void Send(string &message);
     void Receive(string &message, int max_length);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);
+    int  ReceiveAll(string &message, int max_length, int timeout);
 private:
     struct addrinfo *results_;
     int sock_fd_;

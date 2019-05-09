@@ -11,8 +11,8 @@ UDPSocket::UDPSocket() {}
 
 UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_num) {
 
-    struct addrinfo hints,*temp;
-    int status=0;
+    struct addrinfo hints, *temp;
+    int status = 0;
     //make sure struct hints is empty
     memset(&hints, 0, sizeof hints);
 
@@ -25,7 +25,8 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
     //Does all kinds of good stuff for us, including DNS and service name lookups, and fills out the structs we need.
     //Params: nullptr is for IP address for local host, 80 is port number ,hints is our required params.
     //results points to a linked list of struct addrinfo.
-    if ((status = getaddrinfo((ip_addr.empty()? nullptr:ip_addr.c_str()), port_num.c_str(), &hints, &this->results_)) != 0) {
+    if ((status = getaddrinfo((ip_addr.empty() ? nullptr : ip_addr.c_str()), port_num.c_str(), &hints,
+                              &this->results_)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         exit(1);
     }
@@ -36,11 +37,11 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
             perror("socket");
             continue;
         }
-        if(ip_addr.empty())
+        if (ip_addr.empty())
             if (bind(sock_fd_, temp->ai_addr, temp->ai_addrlen) == -1) {
-             close(sock_fd_);
-             perror("bind");
-             continue;
+                close(sock_fd_);
+                perror("bind");
+                continue;
             }
         break;
     }
@@ -50,8 +51,8 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
         fprintf(stderr, "failed to bind socket\n");
         exit(2);
     }
-    this->addr_=results_->ai_addr;
-    this->addr_len_=results_->ai_addrlen;
+    this->addr_ = results_->ai_addr;
+    this->addr_len_ = results_->ai_addrlen;
     freeaddrinfo(results_); // all done with this structure
 
 }
@@ -61,16 +62,18 @@ void UDPSocket::Receive(string &message, int max_length) {
     ssize_t numbytes;
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    if ((numbytes = recvfrom(this->sock_fd_, &message[0],(size_t)(max_length) , 0, (struct sockaddr *)&their_addr, &addr_len)) == -1) {
+    if ((numbytes = recvfrom(this->sock_fd_, &message[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
+                             &addr_len)) == -1) {
         perror("recvfrom");
         exit(1);
     }
 
 }
 
-void UDPSocket::Send(string& message) {
+void UDPSocket::Send(string &message) {
     ssize_t num_bytes;
-    if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t)(message.length()), 0,this->addr_,this->addr_len_)) == -1)
+    if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, this->addr_,
+                            this->addr_len_)) == -1)
         perror("send");
 }
 
@@ -83,7 +86,7 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
     buffer.resize(max_length);
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    int bytes_read = 0;
+    int bytes_read;
     // clear the set ahead of time
     FD_ZERO(&readfds);
     // add our descriptors to the set
@@ -91,18 +94,22 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
     // wait until either socket has data ready to be recv()d
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
-    while (true) {
-        int rv = select(sock_fd_ + 1, &readfds, nullptr, nullptr, &tv);
-        if (rv == -1) {
-            perror("select");
-            break;
-        }
-        else if (rv == 0) break;
+    int rv = select(sock_fd_ + 1, &readfds, nullptr, nullptr, &tv);
+    if (rv == -1) {
+        perror("select");
+        bytes_read = 0;
+    } else if (rv == 0) bytes_read = 0;
+    else {
         if (FD_ISSET(sock_fd_, &readfds)) {
-            bytes_read = static_cast<int>(recvfrom(sock_fd_, &message[0],(size_t)max_length, 0, (struct sockaddr *)&their_addr, &addr_len));
+            bytes_read = static_cast<int>(recvfrom(sock_fd_, &message[0], (size_t) max_length, 0,
+                                                   (struct sockaddr *) &their_addr, &addr_len));
         }
     }
     return bytes_read;
+
+}
+
+int UDPSocket::ReceiveAll(string &message, int max_length, int timeout) {
 
 }
 
