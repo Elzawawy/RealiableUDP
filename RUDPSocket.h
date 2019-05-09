@@ -29,7 +29,7 @@ private:
     vector<SocketHelper::Packet> *packets;
     //Make a initial packet to send when packet received is out of order.
     SocketHelper::AckPacket ack_packet_ = SocketHelper::AckPacket(0,0,0);
-    void* sendpkt_th(SocketHelper::Packet &packet, int th_id);
+    void* sendpkt_th(SocketHelper::Packet packet, int th_id);
     int base_;
     int next_seqnum_;
     int sendwind_size_;

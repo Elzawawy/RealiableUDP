@@ -25,7 +25,7 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
     //Does all kinds of good stuff for us, including DNS and service name lookups, and fills out the structs we need.
     //Params: nullptr is for IP address for local host, 80 is port number ,hints is our required params.
     //results points to a linked list of struct addrinfo.
-    if ((status = getaddrinfo((ip_addr.empty()? nullptr:ip_addr.c_str()), port_num.c_str(), &hints, &this->results_)) != 0) {
+    if ((status = getaddrinfo((ip_addr.empty()? nullptr:ip_addr.c_str()), port_num.empty()?"80":port_num.c_str(), &hints, &this->results_)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         exit(1);
     }

@@ -5,7 +5,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <string.h>
+#include <string>
 #include <sys/socket.h>
 
 using namespace std;

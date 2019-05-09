@@ -17,7 +17,7 @@ void RUDPSocket::Send(string& message) {
     int th_id = 0;
     for (SocketHelper::Packet pkt: *packets) {
         //create a thread for each packet.
-        thread th(&RUDPSocket::sendpkt_th,this, th_id,pkt);
+        thread th(&RUDPSocket::sendpkt_th,this,pkt, th_id);
         //detach the thread from main thread.
         th.detach();
         //increment thread id.
@@ -79,7 +79,7 @@ RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_
 
 }
 
-void *RUDPSocket::sendpkt_th(SocketHelper::Packet &packet, int th_id) {
+void *RUDPSocket::sendpkt_th(SocketHelper::Packet packet, int th_id) {
     std::unique_lock<std::mutex> lock(mtx_);
     while(th_id != current_thid_ || !ready_run_ )
         run_cv_.wait(lock);
@@ -88,30 +88,13 @@ void *RUDPSocket::sendpkt_th(SocketHelper::Packet &packet, int th_id) {
     {
         udp_socket_.Send(*(socket_helper_.PacketToString(packet)));
         if(base_ == next_seqnum_)
-            thread th(&RUDPSocket::StartTimer,this->timer_,20);
+           timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
         next_seqnum_++;
     }
     return nullptr;
 }
 
-void* RUDPSocket::StartTimer(int timer_duration_ms_) {
-    std::chrono::steady_clock::time_point timer_end_=
-            std::chrono::steady_clock::now()+std::chrono::milliseconds(timer_duration_ms_);
-    while(std::chrono::steady_clock::now()<timer_end_);
 
-
-    int th_id = 0;
-    for (int i=base_;i<next_seqnum_;i++) {
-        //create a thread for each packet.
-        thread th(&RUDPSocket::sendpkt_th,this, th_id,(*packets)[i]);
-        //detach the thread from main thread.
-        th.detach();
-        //increment thread id.
-        th_id ++;
-    }
-
-    return nullptr;
-}
 
 void *RUDPSocket::RetransmitPackets() {
     timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
