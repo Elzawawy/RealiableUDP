@@ -14,7 +14,7 @@ using namespace std;
 class SocketHelper {
 public:
     const uint16_t max_packet_length;
-    explicit SocketHelper(uint16_t max_packet_length);
+    SocketHelper(uint16_t max_packet_length);
     struct Packet{
 
     const uint16_t cksum;
