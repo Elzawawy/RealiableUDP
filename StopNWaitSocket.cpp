@@ -13,6 +13,7 @@
 void StopNWaitSocket::Send(string &message) {
     //Break the message into an array of packets to be sent.
     vector<SocketHelper::Packet> *packets = socket_helper_.MakePackets(message,1);
+    auto* send_or_not=socket_helper_.GetBinaryVectorWithProbability(PROBABILITY_OF_LOSS, static_cast<int>(packets->size()));
     //State variable.
     int state = 0;
     int alternatebit =0;
@@ -20,8 +21,12 @@ void StopNWaitSocket::Send(string &message) {
     SocketHelper::AckPacket* ackpacket;
     auto *ackstring = new string;
     cout<<"Start sending packets..."<<endl;
+    int i=0;
     for (SocketHelper::Packet pkt: *packets) {
-        udp_socket_.Send(*socket_helper_.PacketToString(pkt));
+        if((*send_or_not)[i]==1)
+            udp_socket_.Send(*socket_helper_.PacketToString(pkt));
+        else
+            cout<<"packet loss"<<endl;
         while(true)
         {
             cout<<"Wait for ACK..."<<endl;
@@ -38,6 +43,7 @@ void StopNWaitSocket::Send(string &message) {
             }
         }
         alternatebit = !alternatebit;
+        i++;
     }
 }
 
@@ -77,14 +83,19 @@ StopNWaitSocket::StopNWaitSocket(Socket::ip_version version, string ip_addr, str
 void StopNWaitSocket::Send(string &message, struct sockaddr_storage storage) {
     //Break the message into an array of packets to be sent.
     vector<SocketHelper::Packet> *packets = socket_helper_.MakePackets(message,1);
+    auto* send_or_not=socket_helper_.GetBinaryVectorWithProbability(PROBABILITY_OF_LOSS, static_cast<int>(packets->size()));
     //State variable.
     int state = 0;
     int alternatebit =0;
     int numbytes;
     SocketHelper::AckPacket* ackpacket;
     auto *ackstring = new string;
+    int i=0;
     for (SocketHelper::Packet pkt: *packets) {
-        udp_socket_.Send(*socket_helper_.PacketToString(pkt),storage);
+        if((*send_or_not)[i]==1)
+            udp_socket_.Send(*socket_helper_.PacketToString(pkt),storage);
+        else
+            cout<<"packet loss"<<endl;
         while(true)
         {
             numbytes = udp_socket_.ReceiveTillTimeout(*ackstring,MAXACKSIZE,TIMEOUT_SECS);
@@ -99,6 +110,7 @@ void StopNWaitSocket::Send(string &message, struct sockaddr_storage storage) {
         }
         alternatebit = !alternatebit;
     }
+    i++;
 
 }
 

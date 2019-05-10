@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.7.1)
 project(RealiableUDP)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -8,4 +8,5 @@ add_executable(RealiableUDP main.cpp
         Socket.h UDPSocket.h UDPSocket.cpp
         RUDPSocket.h RUDPSocket.cpp SocketHelper.cpp SocketHelper.h
         Timer.cpp Timer.h
-        StopNWaitSocket.cpp StopNWaitSocket.h Server.cpp Client.cpp)
+        StopNWaitSocket.cpp StopNWaitSocket.h Server.cpp Client.cpp
+        TestingClient.cpp TestingClient.h TestingServer.cpp TestingServer.h)

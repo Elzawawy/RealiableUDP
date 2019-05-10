@@ -19,7 +19,9 @@ class RUDPSocket : Socket {
 public:
     RUDPSocket(int send_maxsize,UDPSocket::ip_version version =ipv4,string ip_addr="",string port_num="");
     void Send(string& message) override;
+    void Send(string& message,sockaddr_storage& storage);
     void Receive(string &message, int max_length) override;
+    void Receive(string &message, int max_length,sockaddr_storage& storage);
     void* RetransmitPackets();
 
 private:
@@ -30,6 +32,7 @@ private:
     //Make a initial packet to send when packet received is out of order.
     SocketHelper::AckPacket ack_packet_ = SocketHelper::AckPacket(0,0,0);
     void* sendpkt_th(SocketHelper::Packet packet, int th_id);
+    void* sendpkt_To_th(SocketHelper::Packet packet, int th_id,sockaddr_storage storage);
     int base_;
     int next_seqnum_;
     int sendwind_size_;

@@ -13,7 +13,7 @@ public:
     UDPSocket(ip_version version=ipv4,string ip_addr="",string port_num="");
     UDPSocket();
     void Send(string &message);
-    void Send(string &message,struct sockaddr_storage storage);
+    void Send(string &message,struct sockaddr_storage& storage);
     void Receive(string &message, int max_length);
     void Receive(string &message, int max_length,struct sockaddr_storage &storage);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);

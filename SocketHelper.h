@@ -14,13 +14,13 @@ using namespace std;
 class SocketHelper {
 public:
     const uint16_t max_packet_length;
-    SocketHelper(uint16_t max_packet_length);
+    explicit SocketHelper(uint16_t max_packet_length);
     struct Packet{
 
-    const uint16_t cksum;
-    const uint16_t len;
-    const uint32_t seqno;
-    string* data;
+        const uint16_t cksum;
+        const uint16_t len;
+        const uint32_t seqno;
+        string* data;
 
         Packet(uint16_t cksum, uint16_t len, uint32_t seqno, string *data);
     };
@@ -30,14 +30,16 @@ public:
         uint32_t ackno;
         AckPacket(uint16_t cksum, uint16_t len, uint32_t ackno);
     };
-    vector<Packet>*MakePackets(string &data, uint32_t seqno);
+    vector<Packet>*MakePackets(string &data, int protocol);
     string* PacketToString(Packet &pkt);
     Packet* StringToPacket(string &str);
     string* AckPacketToString(AckPacket &pkt);
     AckPacket* StringToAckPacket(string &str);
+    vector<int>* GetBinaryVectorWithProbability(double probability_of_zeros,int length);
 
 private:
-    std::vector<std::string> split_string(const std::string& str, const std::string& delimiter);
+    std::vector<std::string>* split_string(const std::string& str, const std::string& delimiter);
+    std::vector<std::string> *split(std::string const & s, size_t count);
 };
 
 

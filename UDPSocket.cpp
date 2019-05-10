@@ -5,8 +5,8 @@
 #include <netdb.h>
 #include <cstring>
 #include <unistd.h>
-#include <iostream>
 #include "UDPSocket.h"
+#include <iostream>
 
 UDPSocket::UDPSocket() {}
 
@@ -39,9 +39,9 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
         }
         if(ip_addr.empty())
             if (bind(sock_fd_, temp->ai_addr, temp->ai_addrlen) == -1) {
-                //close(sock_fd_);
-                perror("bind");
-                continue;
+//             close(sock_fd_);
+             perror("bind");
+             continue;
             }
         break;
     }
@@ -51,8 +51,8 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
         fprintf(stderr, "failed to bind socket\n");
         exit(2);
     }
-    this->addr_ = results_->ai_addr;
-    this->addr_len_ = results_->ai_addrlen;
+    this->addr_=results_->ai_addr;
+    this->addr_len_=results_->ai_addrlen;
     freeaddrinfo(results_); // all done with this structure
 
 }
@@ -62,21 +62,21 @@ void UDPSocket::Receive(string &message, int max_length) {
     ssize_t numbytes;
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    if ((numbytes = recvfrom(this->sock_fd_, &message[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
-                             &addr_len)) == -1) {
+    char buffer[max_length];
+    if ((numbytes = recvfrom(this->sock_fd_, buffer,(size_t)(max_length) , 0, (struct sockaddr *)&their_addr, &addr_len)) == -1) {
         perror("recvfrom");
         exit(1);
     }
-
+    message = string(buffer);
+    std::cout<<"Recieved"<<numbytes<<"+++"<<message<<endl;
 }
 
-void UDPSocket::Send(string &message) {
+void UDPSocket::Send(string& message) {
     ssize_t num_bytes;
-    if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, this->addr_,
-                            this->addr_len_)) == -1)
+    if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t)(message.length()), 0,this->addr_,this->addr_len_)) == -1)
         perror("send");
     cout<<"bytes sent"<<num_bytes<<endl;
-    cout<<"bytes sent mafrod enha"<<message.length()<<endl;
+    cout<<"bytes sent mafrod enha"<<message.length()<<"++++"<<message<<endl;
 
 }
 
@@ -89,7 +89,7 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
     buffer.resize(max_length);
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    int bytes_read;
+    int bytes_read = 0;
     // clear the set ahead of time
     FD_ZERO(&readfds);
     // add our descriptors to the set
@@ -114,13 +114,13 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
 
 }
 
-void UDPSocket::Send(string &message, struct sockaddr_storage storage) {
+void UDPSocket::Send(string &message, struct sockaddr_storage& storage) {
     ssize_t num_bytes;
-    socklen_t addr_len = sizeof (struct sockaddr_storage);
+    socklen_t addr_len = sizeof (storage);
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, (struct sockaddr *)&storage,addr_len)) == -1)
         perror("send");
     cout<<"bytes sent"<<num_bytes<<endl;
-    cout<<"bytes sent mafrod enha"<<message.length()<<endl;
+    cout<<"bytes sent mafrod enha"<<message.length()<<"++++"<<message<<endl;
 }
 
 int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout, struct sockaddr_storage &storage) {
@@ -162,12 +162,16 @@ void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage
     ssize_t numbytes;
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    if ((numbytes = recvfrom(this->sock_fd_, &message[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
-                             &addr_len)) == -1) {
+    char buffer[max_length];
+    if ((numbytes = recvfrom(this->sock_fd_, buffer,(size_t)(max_length) , 0,(sockaddr*)&their_addr, &addr_len)) == -1) {
         perror("recvfrom");
         exit(1);
     }
+    message = string(buffer);
     storage = their_addr;
+
+    std::cout<<"Recieved"<<numbytes<<"+++"<<message<<endl;
+
 }
 
 
