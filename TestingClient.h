@@ -8,7 +8,6 @@
 
 class TestingClient {
 public:
-    int start(int argc, char *argv[]);
     void startMyUDPSocket(char *argv[]);
     void startMyRUDPSocket(char *argv[]);
 };
