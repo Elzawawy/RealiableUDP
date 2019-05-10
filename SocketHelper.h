@@ -35,6 +35,7 @@ public:
     Packet* StringToPacket(string &str);
     string* AckPacketToString(AckPacket &pkt);
     AckPacket* StringToAckPacket(string &str);
+    bool IsCorrupt(Packet &pkt);
     vector<int>* GetBinaryVectorWithProbability(double probability_of_zeros,int length);
 
 private:
