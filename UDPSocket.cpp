@@ -157,5 +157,18 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout, 
     return bytes_read;
 }
 
+void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage &storage) {
+    int rv;
+    ssize_t numbytes;
+    struct sockaddr_storage their_addr;
+    socklen_t addr_len = sizeof their_addr;
+    if ((numbytes = recvfrom(this->sock_fd_, &message[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
+                             &addr_len)) == -1) {
+        perror("recvfrom");
+        exit(1);
+    }
+    storage = their_addr;
+}
+
 
 

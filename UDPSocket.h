@@ -15,6 +15,7 @@ public:
     void Send(string &message);
     void Send(string &message,struct sockaddr_storage storage);
     void Receive(string &message, int max_length);
+    void Receive(string &message, int max_length,struct sockaddr_storage &storage);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout,struct sockaddr_storage &storage);
 private:
