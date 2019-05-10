@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <thread>
+#include <iostream>
 #include "UDPSocket.h"
 #include "RUDPSocket.h"
 
@@ -67,9 +68,10 @@ void RUDPSocket::Receive(string &message, int max_length) {
     }
     //send the ack packet whether an updated version of it or the oldest ACK available.
     udp_socket_.Send(*socket_helper_.AckPacketToString(ack_packet_),storage);
+    delete rcvpkt;
 }
 
-RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num):timer_(20),udp_socket_(version, ip_addr, port_num) {
+RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num):timer_(5000),udp_socket_(version, ip_addr, port_num) {
 
     // Initialize variables used in GBN.
     this->base_ = 1;
@@ -97,12 +99,12 @@ void *RUDPSocket::sendpkt_th(SocketHelper::Packet packet, int th_id) {
 
 
 
-void *RUDPSocket::RetransmitPackets() {
+void RUDPSocket::RetransmitPackets() {
     timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
     for (int i=base_;i<next_seqnum_;i++) {
         udp_socket_.Send(*socket_helper_.PacketToString((*packets)[i]));
     }
-    return nullptr;
+//    return nullptr;
 }
 
 void RUDPSocket::Receive(string &message, int max_length, sockaddr_storage& storage) {
@@ -129,10 +131,10 @@ void RUDPSocket::Receive(string &message, int max_length, sockaddr_storage& stor
 void RUDPSocket::Send(string &message, sockaddr_storage& storage) {
 
         //Break the message into an array of packets to be sent.
-        packets=socket_helper_.MakePackets(message,base_);
+        packets=socket_helper_.MakePackets(message,0);
         vector<string> Acks(packets->size());
 
-
+        cout<<"number of packets server"<<packets->size()<<endl;
         int th_id = 0;
         for (SocketHelper::Packet pkt: *packets) {
             //create a thread for each packet.
@@ -175,7 +177,12 @@ void *RUDPSocket::sendpkt_To_th(SocketHelper::Packet packet, int th_id, sockaddr
             timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
         next_seqnum_++;
     }
+    run_cv_.notify_all();
     return nullptr;
+}
+
+RUDPSocket::~RUDPSocket() {
+delete packets;
 }
 
 

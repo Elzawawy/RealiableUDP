@@ -18,8 +18,8 @@ using namespace std;
 class Timer {
 private:
     int timer_duration_ms_;
-    template<typename _Callable, typename... _Args>
-    void TimerCounter(_Callable &&f,_Args&&... arg){
+    template<typename _Callable, typename _Object ,typename... _Args>
+    void TimerCounter(_Callable &&f,_Object&& o,_Args&&... arg){
 
         std::chrono::steady_clock::time_point timer_end_=
                 std::chrono::steady_clock::now()+std::chrono::milliseconds(timer_duration_ms_);
@@ -32,6 +32,7 @@ private:
             }
         };
 
+        (o->*f)();
         
 
 
@@ -42,16 +43,16 @@ private:
 
 
 public:
-    template<typename _Callable, typename... _Args>
-    void StartTimer(_Callable&& f , _Args&&... args){
+    template<typename _Callable,typename _Object  ,typename... _Args>
+    void StartTimer(_Callable&& f , _Object&& o,_Args&&... args){
         //acquire the mutex lock and initialize the timer_stop_
         std::unique_lock<std::mutex> lck(this->stopping_timer_mutex_);
         timer_stop_=false;
         lck.unlock();
         //auto x = [this,f,args...] (){TimerCounter(f, args...);};
 
-        thread th( &Timer::TimerCounter<std::decay_t<_Callable>,std::decay_t<_Args>...>,this,
-                std::forward<_Callable>(f), std::forward<_Args>(args)...);//launch a thread to count
+        thread th( &Timer::TimerCounter<std::decay_t<_Callable>,std::decay_t<_Object>,std::decay_t<_Args>...>,this,
+                std::forward<_Callable>(f),std::forward<_Object>(o) ,std::forward<_Args>(args)...);//launch a thread to count
         th.detach();
 
     }

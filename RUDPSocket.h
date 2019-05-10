@@ -22,11 +22,13 @@ public:
     void Send(string& message,sockaddr_storage& storage);
     void Receive(string &message, int max_length) override;
     void Receive(string &message, int max_length,sockaddr_storage& storage);
-    void* RetransmitPackets();
+    void RetransmitPackets();
+
+    virtual ~RUDPSocket();
 
 private:
     UDPSocket udp_socket_;
-    SocketHelper socket_helper_ = SocketHelper(500);
+    SocketHelper socket_helper_ = SocketHelper(10);
     Timer timer_;
     vector<SocketHelper::Packet> *packets;
     //Make a initial packet to send when packet received is out of order.
