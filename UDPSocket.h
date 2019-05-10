@@ -11,11 +11,10 @@ class UDPSocket : public Socket{
 
 public:
     UDPSocket(ip_version version=ipv4,string ip_addr="",string port_num="");
-    UDPSocket();
-    void Send(string &message);
-    void Send(string &message,struct sockaddr_storage& storage);
-    void Receive(string &message, int max_length);
-    void Receive(string &message, int max_length,struct sockaddr_storage &storage);
+    void Send(string &message) override;
+    void Send(string &message,struct sockaddr_storage storage) override;
+    void Receive(string &message, int max_length) override;
+    void Receive(string &message, int max_length,struct sockaddr_storage &storage) override;
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout,struct sockaddr_storage &storage);
 private:
