@@ -60,12 +60,21 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
 void UDPSocket::Receive(string &message, int max_length) {
     int rv;
     ssize_t numbytes;
+    string buffer;
+    buffer.clear();
+    buffer.resize(max_length);
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
-    if ((numbytes = recvfrom(this->sock_fd_, &message[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
+    if ((numbytes = recvfrom(this->sock_fd_, &buffer[0], (size_t) (max_length), 0, (struct sockaddr *) &their_addr,
                              &addr_len)) == -1) {
         perror("recvfrom");
         exit(1);
+    }
+    if(numbytes != 0)
+    {
+        message.clear();
+        buffer[numbytes] ='\0';
+        message = &buffer[0];
     }
 
 }
@@ -75,11 +84,6 @@ void UDPSocket::Send(string &message) {
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, this->addr_,
                             this->addr_len_)) == -1)
         perror("send");
-    //cout<<"addr"<<this->addr_<<endl;
-    //cout<<"addr-len"<<this->addr_len_<<endl;
-    //cout<<"bytes sent"<<num_bytes<<endl;
-    //cout<<"bytes sent mafrod enha"<<message.length()<<endl;
-
 }
 
 int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) {
@@ -169,6 +173,9 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout, 
 
 void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage &storage) {
     int rv;
+    string buffer;
+    buffer.clear();
+    buffer.resize(max_length);
     ssize_t numbytes;
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
@@ -177,7 +184,14 @@ void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage
         perror("recvfrom");
         exit(1);
     }
-    storage = their_addr;
+    if(numbytes != 0)
+    {
+        message.clear();
+        buffer[numbytes] ='\0';
+        message = &buffer[0];
+        storage = their_addr;
+    }
+
 }
 
 
