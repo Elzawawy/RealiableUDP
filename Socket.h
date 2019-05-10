@@ -1,14 +1,13 @@
 //
 // Created by zawawy on 5/1/19.
 //
+#include <string.h>
+#include <sys/socket.h>
+using namespace std;
 
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <string.h>
-#include <sys/socket.h>
-
-using namespace std;
 
 class Socket {
 public:

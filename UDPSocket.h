@@ -10,12 +10,13 @@ using namespace std;
 class UDPSocket : public Socket{
 
 public:
-    UDPSocket(ip_version version,string ip_addr="",string port_num="");
+    UDPSocket(ip_version version=ipv4,string ip_addr="",string port_num="");
     UDPSocket();
     void Send(string &message);
+    void Send(string &message,struct sockaddr_storage storage);
     void Receive(string &message, int max_length);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);
-    int  ReceiveAll(string &message, int max_length, int timeout);
+    int  ReceiveTillTimeout(string &message, int max_length, int timeout,struct sockaddr_storage &storage);
 private:
     struct addrinfo *results_;
     int sock_fd_;

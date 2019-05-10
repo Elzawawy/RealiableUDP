@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <cstring>
 #include <unistd.h>
+#include <iostream>
 #include "UDPSocket.h"
 
 UDPSocket::UDPSocket() {}
@@ -39,7 +40,7 @@ UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_
         }
         if (ip_addr.empty())
             if (bind(sock_fd_, temp->ai_addr, temp->ai_addrlen) == -1) {
-                close(sock_fd_);
+                //close(sock_fd_);
                 perror("bind");
                 continue;
             }
@@ -75,6 +76,9 @@ void UDPSocket::Send(string &message) {
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, this->addr_,
                             this->addr_len_)) == -1)
         perror("send");
+    cout<<"bytes sent"<<num_bytes<<endl;
+    cout<<"bytes sent mafrod enha"<<message.length()<<endl;
+
 }
 
 int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) {
@@ -94,7 +98,9 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
     // wait until either socket has data ready to be recv()d
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
+    cout<<"Ana mstny y3m"<<endl;
     int rv = select(sock_fd_ + 1, &readfds, nullptr, nullptr, &tv);
+    cout<<rv<<"Ana gali haga y3m"<<endl;
     if (rv == -1) {
         perror("select");
         bytes_read = 0;
@@ -109,7 +115,48 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout) 
 
 }
 
-int UDPSocket::ReceiveAll(string &message, int max_length, int timeout) {
-
+void UDPSocket::Send(string &message, struct sockaddr_storage storage) {
+    ssize_t num_bytes;
+    socklen_t addr_len = sizeof (struct sockaddr_storage);
+    if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, (struct sockaddr *)&storage,addr_len)) == -1)
+        perror("send");
+    cout<<"bytes sent"<<num_bytes<<endl;
+    cout<<"bytes sent mafrod enha"<<message.length()<<endl;
 }
+
+int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout, struct sockaddr_storage &storage) {
+    string buffer;
+    fd_set readfds;
+    struct timeval tv;
+    string request;
+    buffer.clear();
+    buffer.resize(max_length);
+    struct sockaddr_storage their_addr;
+    socklen_t addr_len = sizeof their_addr;
+    int bytes_read;
+    // clear the set ahead of time
+    FD_ZERO(&readfds);
+    // add our descriptors to the set
+    FD_SET(sock_fd_, &readfds);
+    // wait until either socket has data ready to be recv()d
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+    cout<<"Ana mstny y3m"<<endl;
+    int rv = select(sock_fd_ + 1, &readfds, nullptr, nullptr, &tv);
+    cout<<rv<<"Ana gali haga y3m"<<endl;
+    if (rv == -1) {
+        perror("select");
+        bytes_read = 0;
+    } else if (rv == 0) bytes_read = 0;
+    else {
+        if (FD_ISSET(sock_fd_, &readfds)) {
+            bytes_read = static_cast<int>(recvfrom(sock_fd_, &message[0], (size_t) max_length, 0,
+                                                   (struct sockaddr *) &their_addr, &addr_len));
+        }
+    }
+    storage = their_addr;
+    return bytes_read;
+}
+
+
 
