@@ -2,10 +2,10 @@
 // Created by zawawy on 5/9/19.
 //
 #include <iostream>
-#include "Socket.h"
-#include "UDPSocket.h"
+#include "../../abstract_sockets/Socket.h"
+#include "../../unreliable_sockets/UDPSocket.h"
 #include "StopNWaitSocket.h"
-#include "SocketHelper.h"
+#include "../../utils/SocketHelper.h"
 #define MAXACKSIZE 50
 #define MAXPKTSIZE 508
 #define TIMEOUT_SECS 20

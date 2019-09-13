@@ -1,9 +1,9 @@
 //
 // Created by zawawy on 5/10/19.
 //
-#include "UDPSocket.h"
+#include "../unreliable_sockets/UDPSocket.h"
 #include "TestingServer.h"
-#include "StopNWaitSocket.h"
+#include "../reliable_sockets/stop_and_wait_socket/StopNWaitSocket.h"
 #include <stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -35,7 +35,6 @@ void TestingServer::startMyRUDPSocket(void) {
 
     string buf;
     struct sockaddr_storage storage;
-    //std::this_thread::sleep_for(std::chrono::milliseconds(20));
     StopNWaitSocket socket = StopNWaitSocket(UDPSocket::ipv4,"",MYPORT);
     cout<<"Created Socket."<<endl;
     socket.Receive(buf,50,storage);
@@ -44,9 +43,7 @@ void TestingServer::startMyRUDPSocket(void) {
     std::stringstream buffer;
     buffer << t.rdbuf();
     string string1 = buffer.str();
-    //string string1 = "hoba lala";
     socket.Send(string1,storage);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    //while(true);
+
     printf("listener: packet contains \"%s\"\n",&buf[0]);
 }

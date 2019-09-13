@@ -8,10 +8,10 @@
 #include <string>
 #include <mutex>
 #include <condition_variable>
-#include "SocketHelper.h"
-#include "Timer.h"
-#include "UDPSocket.h"
-#include "Socket.h"
+#include "../../utils/SocketHelper.h"
+#include "../../utils/Timer.h"
+#include "../../unreliable_sockets/UDPSocket.h"
+#include "../../../abstract_sockets/Socket.h"
 
 using namespace std;
 

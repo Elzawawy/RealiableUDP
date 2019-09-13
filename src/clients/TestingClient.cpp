@@ -3,8 +3,8 @@
 //
 
 #include "TestingClient.h"
-#include "UDPSocket.h"
-#include "StopNWaitSocket.h"
+#include "../unreliable_sockets/UDPSocket.h"
+#include "../reliable_sockets/stop_and_wait_socket/StopNWaitSocket.h"
 /*
 ** talker.c -- a datagram "client" demo
 */

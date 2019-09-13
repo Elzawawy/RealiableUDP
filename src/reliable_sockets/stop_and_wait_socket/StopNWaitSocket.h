@@ -7,9 +7,9 @@
 #define STOPNWAITSOCKET_H
 
 #include <string>
-#include "Socket.h"
-#include "UDPSocket.h"
-#include "SocketHelper.h"
+#include "../../abstract_sockets/Socket.h"
+#include "../../unreliable_sockets/UDPSocket.h"
+#include "../../utils/SocketHelper.h"
 #define PROBABILITY_OF_LOSS 0
 
 using namespace std;

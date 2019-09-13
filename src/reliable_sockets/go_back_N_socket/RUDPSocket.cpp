@@ -5,7 +5,7 @@
 #include <vector>
 #include <thread>
 #include <iostream>
-#include "UDPSocket.h"
+#include "../../unreliable_sockets/UDPSocket.h"
 #include "RUDPSocket.h"
 
 
@@ -110,7 +110,6 @@ void RUDPSocket::RetransmitPackets() {
     for (int i = base_ - 1; i < next_seqnum_ - 1; i++) {
         udp_socket_.Send(*socket_helper_.PacketToString((*packets)[i]));
     }
-//    return nullptr;
 }
 
 void RUDPSocket::Receive(string &message, int max_length, sockaddr_storage &storage) {
