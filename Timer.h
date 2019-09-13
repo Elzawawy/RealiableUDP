@@ -31,7 +31,7 @@ private:
                 return ;
             }
         };
-
+        /*Invike the callback*/
         (o->*f)();
         
 
@@ -51,9 +51,9 @@ public:
         lck.unlock();
         //auto x = [this,f,args...] (){TimerCounter(f, args...);};
 
-        thread th( &Timer::TimerCounter<std::decay_t<_Callable>,std::decay_t<_Object>,std::decay_t<_Args>...>,this,
+        thread timer_counter_thread( &Timer::TimerCounter<std::decay_t<_Callable>,std::decay_t<_Object>,std::decay_t<_Args>...>,this,
                 std::forward<_Callable>(f),std::forward<_Object>(o) ,std::forward<_Args>(args)...);//launch a thread to count
-        th.detach();
+        timer_counter_thread.detach();
 
     }
     void StopTimer();

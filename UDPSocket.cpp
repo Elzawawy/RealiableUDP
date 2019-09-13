@@ -8,7 +8,12 @@
 #include "UDPSocket.h"
 #include <iostream>
 
-
+/**
+ *
+ * @param version the ip version ipv4, ipv6 or undefined to use any
+ * @param ip_addr the ip address to be udsed either as a sending or receiving socket
+ * @param port_num the port number to be used
+ */
 UDPSocket::UDPSocket(UDPSocket::ip_version version, string ip_addr, string port_num) {
 
     struct addrinfo hints,*temp;
@@ -75,7 +80,7 @@ void UDPSocket::Send(string& message) {
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t)(message.length()), 0,this->addr_,this->addr_len_)) == -1)
         perror("send");
     cout<<"bytes sent"<<num_bytes<<endl;
-    cout<<"bytes sent mafrod enha"<<message.length()<<"++++"<<message<<endl;
+    cout<<"bytes sent should be of size "<<message.length()<<endl;
 
 }
 
@@ -126,7 +131,7 @@ void UDPSocket::Send(string &message, struct sockaddr_storage storage) {
     if ((num_bytes = sendto(this->sock_fd_, message.c_str(), (size_t) (message.length()), 0, (struct sockaddr *)&storage,addr_len)) == -1)
         perror("send");
     cout<<"bytes sent"<<num_bytes<<endl;
-    cout<<"bytes sent mafrod enha"<<message.length()<<"++++"<<message<<endl;
+    cout<<"bytes sent should be of size "<<message.length()<<endl;
 
 }
 
@@ -168,7 +173,6 @@ int UDPSocket::ReceiveTillTimeout(string &message, int max_length, int timeout, 
 }
 
 void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage &storage) {
-    int rv;
     ssize_t numbytes;
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
@@ -180,7 +184,7 @@ void UDPSocket::Receive(string &message, int max_length, struct sockaddr_storage
     message = string(buffer, static_cast<unsigned long>(numbytes));
     storage = their_addr;
 
-    std::cout<<"Recieved"<<numbytes<<"+++"<<message<<endl;
+    std::cout<<"Recieved"<<numbytes<<" "<<message<<endl;
 
 }
 

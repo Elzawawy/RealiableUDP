@@ -18,7 +18,7 @@ public:
     int  ReceiveTillTimeout(string &message, int max_length, int timeout);
     int  ReceiveTillTimeout(string &message, int max_length, int timeout,struct sockaddr_storage &storage);
 private:
-    struct addrinfo *results_;
+    struct addrinfo *results_;//To be filled struct by the getaddrinfo function
     int sock_fd_;
     sockaddr* addr_;
     socklen_t addr_len_;
