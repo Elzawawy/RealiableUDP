@@ -11,4 +11,5 @@ add_executable(RealiableUDP main.cpp
         RUDPSocket.h RUDPSocket.cpp SocketHelper.cpp SocketHelper.h
         Timer.cpp Timer.h
         StopNWaitSocket.cpp StopNWaitSocket.h GBNServer.cpp GBNClient.cpp
+        TestingServer.h TestingClient.h TestingServer.cpp TestingClient.cpp
         )

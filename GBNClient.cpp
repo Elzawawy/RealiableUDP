@@ -7,9 +7,9 @@
 class GBNClient{
 public:
     void Start(){
-        RUDPSocket socket_(50,Socket::ipv4,"192.168.1.3","3000");
-        string message="Iago Aspas";
-//                       " Juncal is a Spanish professional"
+        RUDPSocket socket_(50,Socket::ipv4,"localhost","3000");
+        string message="Iago Aspas"
+                       " Juncal is a Spanish professional";
 //                       " footballer who plays as a striker for"
 //                       " RC Celta de Vigo and the Spain national team."
 //                       " He has spent most of his career with Celta, appearing"

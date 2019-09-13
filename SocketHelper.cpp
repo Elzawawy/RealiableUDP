@@ -36,11 +36,16 @@ vector<SocketHelper::Packet> *SocketHelper::MakePackets(string &data,int protoco
 SocketHelper::SocketHelper(const uint16_t max_packet_length) : max_packet_length(max_packet_length) {}
 
 string *SocketHelper::PacketToString(SocketHelper::Packet &pkt) {
-    auto * pkt_string = new string;
-    pkt_string->append(std::to_string(pkt.cksum)+"\n");
-    pkt_string->append(std::to_string(pkt.len)+"\n");
-    pkt_string->append(std::to_string(pkt.seqno)+"\n");
-    pkt_string->append(*pkt.data);
+
+    auto * pkt_string = new string(std::to_string(pkt.cksum)+"\n"+
+                                           std::to_string(pkt.len)+"\n"+
+                                           std::to_string(pkt.seqno)+"\n"+
+                                           *pkt.data);
+
+//    pkt_string->append(std::to_string(pkt.cksum)+"\n");
+//    pkt_string->append(std::to_string(pkt.len)+"\n");
+//    pkt_string->append(std::to_string(pkt.seqno)+"\n");
+//    pkt_string->append(*pkt.data);
     return pkt_string;
 }
 

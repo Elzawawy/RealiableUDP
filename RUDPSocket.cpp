@@ -14,6 +14,7 @@ void RUDPSocket::Send(string& message) {
     //Break the message into an array of packets to be sent.
     packets=socket_helper_.MakePackets(message,0);
     vector<string> Acks(packets->size());
+    cout<<"number of packets server"<<packets->size()<<endl;
 
 
     int th_id = 0;
@@ -29,7 +30,12 @@ void RUDPSocket::Send(string& message) {
     /*Receiving the acks*/
     for (int i = 0; i < packets->size(); ++i) {
         udp_socket_.Receive(Acks[i],64);
-        base_=socket_helper_.StringToAckPacket(Acks[i])->ackno+1;
+        int newbase =socket_helper_.StringToAckPacket(Acks[i])->ackno+1;
+        int delta = newbase - base_;
+        base_ = newbase;
+        for (int j = next_seqnum_; j < next_seqnum_+delta && (next_seqnum_+delta)< packets->size(); ++j) {
+            udp_socket_.Send(*socket_helper_.PacketToString((*packets)[j]));
+        }
         if(base_==next_seqnum_){
             //stop timer
             timer_.StopTimer();
@@ -71,7 +77,7 @@ void RUDPSocket::Receive(string &message, int max_length) {
     delete rcvpkt;
 }
 
-RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num):timer_(5000),udp_socket_(version, ip_addr, port_num) {
+RUDPSocket::RUDPSocket(int send_maxsize,UDPSocket::ip_version version,string ip_addr,string port_num):timer_(10000),udp_socket_(version, ip_addr, port_num) {
 
     // Initialize variables used in GBN.
     this->base_ = 1;
@@ -94,6 +100,7 @@ void *RUDPSocket::sendpkt_th(SocketHelper::Packet packet, int th_id) {
            timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
         next_seqnum_++;
     }
+    run_cv_.notify_all();
     return nullptr;
 }
 
@@ -101,7 +108,7 @@ void *RUDPSocket::sendpkt_th(SocketHelper::Packet packet, int th_id) {
 
 void RUDPSocket::RetransmitPackets() {
     timer_.StartTimer(&RUDPSocket::RetransmitPackets,this);
-    for (int i=base_;i<next_seqnum_;i++) {
+    for (int i=base_-1;i<next_seqnum_-1;i++) {
         udp_socket_.Send(*socket_helper_.PacketToString((*packets)[i]));
     }
 //    return nullptr;
@@ -128,7 +135,7 @@ void RUDPSocket::Receive(string &message, int max_length, sockaddr_storage& stor
 
 }
 
-void RUDPSocket::Send(string &message, sockaddr_storage& storage) {
+void RUDPSocket::Send(string &message, sockaddr_storage storage) {
 
         //Break the message into an array of packets to be sent.
         packets=socket_helper_.MakePackets(message,0);
@@ -148,7 +155,12 @@ void RUDPSocket::Send(string &message, sockaddr_storage& storage) {
         /*Receiving the acks*/
         for (int i = 0; i < packets->size(); ++i) {
             udp_socket_.Receive(Acks[i],64);
-            base_=socket_helper_.StringToAckPacket(Acks[i])->ackno+1;
+            int newbase =socket_helper_.StringToAckPacket(Acks[i])->ackno+1;
+            int delta = newbase - base_;
+            base_ = newbase;
+            for (int j = next_seqnum_; j < next_seqnum_+delta && (next_seqnum_+delta)< packets->size(); ++j) {
+                udp_socket_.Send(*socket_helper_.PacketToString((*packets)[j]),storage);
+            }
             if(base_==next_seqnum_){
                 //stop timer
                 timer_.StopTimer();

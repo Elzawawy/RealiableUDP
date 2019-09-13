@@ -19,7 +19,7 @@ class RUDPSocket : Socket {
 public:
     RUDPSocket(int send_maxsize,UDPSocket::ip_version version =ipv4,string ip_addr="",string port_num="");
     void Send(string& message) override;
-    void Send(string& message,sockaddr_storage& storage);
+    void Send(string& message,sockaddr_storage storage) override;
     void Receive(string &message, int max_length) override;
     void Receive(string &message, int max_length,sockaddr_storage& storage);
     void RetransmitPackets();
